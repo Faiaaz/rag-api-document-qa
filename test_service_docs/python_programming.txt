@@ -1,0 +1,5 @@
+Python Programming Guide
+Python is a high-level programming language known for its simplicity.
+It supports multiple programming paradigms including procedural and object-oriented programming.
+Python has extensive libraries for data science, web development, and automation.
+The language emphasizes code readability with its clean syntax.
