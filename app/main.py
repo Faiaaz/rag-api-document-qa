@@ -25,19 +25,28 @@ document_service = DocumentService(
 )
 
 # Initialize LLM components
-openai_client = OpenAIClient(
-    api_key=os.getenv("OPENAI_API_KEY"),
-    model=os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
-)
+try:
+    openai_client = OpenAIClient(
+        api_key=os.getenv("OPENAI_API_KEY"),
+        model=os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
+    )
+    llm_available = True
+except ValueError as e:
+    print(f"⚠️  OpenAI client not available: {e}")
+    openai_client = None
+    llm_available = False
 
 prompt_manager = PromptManager()
 
-# Initialize RAG pipeline
-rag_pipeline = RAGPipeline(
-    document_service=document_service,
-    openai_client=openai_client,
-    prompt_manager=prompt_manager
-)
+# Initialize RAG pipeline only if LLM is available
+if llm_available:
+    rag_pipeline = RAGPipeline(
+        document_service=document_service,
+        openai_client=openai_client,
+        prompt_manager=prompt_manager
+    )
+else:
+    rag_pipeline = None
 
 # Create FastAPI app
 app = FastAPI(
@@ -77,7 +86,8 @@ async def health_check():
         "status": "healthy",
         "message": "RAG API is running successfully",
         "document_service": document_service.get_document_stats(),
-        "llm_service": openai_client.get_model_info()
+        "llm_service": openai_client.get_model_info() if openai_client else {"status": "not_available"},
+        "llm_available": llm_available
     }
 
 @app.post("/upload", response_model=UploadResponse)
@@ -114,6 +124,12 @@ async def upload_document(file: UploadFile = File(...)):
 async def query_documents(request: QueryRequest):
     """Query documents using RAG pipeline"""
     try:
+        if rag_pipeline is None:
+            raise HTTPException(
+                status_code=503, 
+                detail="LLM service not available. Please set OPENAI_API_KEY environment variable."
+            )
+        
         response = rag_pipeline.answer_question_with_request(request)
         return response
         
