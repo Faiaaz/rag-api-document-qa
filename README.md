@@ -24,6 +24,17 @@ chmod +x docker-run.sh
 
 **That's it!** Your RAG API is now running and ready to process documents and answer questions! 🚀
 
+## 🌐 Streamlit Cloud Deployment
+
+**Deploy to Streamlit Community Cloud in minutes!**
+
+1. **Push your code to GitHub**
+2. **Connect to [share.streamlit.io](https://share.streamlit.io)**
+3. **Deploy automatically**
+4. **Share your app URL**
+
+📖 **See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for detailed instructions**
+
 ## 🎯 What This System Does
 
 1. **Document Ingestion**: Accepts various file types (.pdf, .docx, .txt, .jpg, .png, .csv, .db)
